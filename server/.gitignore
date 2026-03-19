@@ -8,3 +8,5 @@ build
 logs
 
 ai-video-summarizer-collection
+
+temp/audio/*

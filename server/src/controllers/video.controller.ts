@@ -15,4 +15,20 @@ export class VideoController {
             next(error);
         }
     }
+
+    static async downloadAudio(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { url } = req.body;
+            const videoInfo = await VideoService.getVideoInfo(url as string);
+            const audioPath = await VideoService.downloadAudio(url as string);
+            res.status(StatusCodes.OK).json(successResponse({ 
+                ...videoInfo,
+                audioPath,
+                message: "Audio downloaded successfully"
+             }));
+        } catch (error) {
+            logger.error("Error in downloadAudio controller:", error);
+            next(error);
+        }
+    }
 };

@@ -79,4 +79,42 @@ export class VideoService {
             throw new AppError(StatusCodes.INTERNAL_SERVER_ERROR, "Failed to get video info");
         }
     }
+
+    static async downloadAudio(url: string): Promise<string> {
+        try {
+            await this.ensureDirectoryExists();
+
+            const videoId = ytdl.getVideoID(url);
+            const audioPath = path.join(this.AUDIO_DIR, `${videoId}.mp3`);
+
+            await youtubeDl(url, {
+                extractAudio: true,
+                audioFormat: "mp3",
+                audioQuality: 0, // best quality
+                noWarnings: true,
+                preferFreeFormats: true,
+                output: audioPath,
+                ffmpegLocation: ffmpeg.path,
+            })
+            
+            const fileStats = await import("fs/promises").then((fs) => 
+                fs.stat(audioPath)
+            );
+
+            if (fileStats.size === 0) {
+                throw new AppError(StatusCodes.INTERNAL_SERVER_ERROR, "Failed to download audio");
+            }
+
+            return audioPath;
+        } catch (error) {
+            logger.error("Failed to download audio", { url, error });
+            if (error instanceof Error) {
+                if (error.message.includes("ffmpeg")) {
+                    throw new AppError(StatusCodes.INTERNAL_SERVER_ERROR, "Failed to download audio");
+                }
+                throw new AppError(StatusCodes.INTERNAL_SERVER_ERROR, "Failed to download audio");
+            }
+            throw new AppError(StatusCodes.INTERNAL_SERVER_ERROR, "Failed to download audio");
+        }
+    };
 };
