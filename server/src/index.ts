@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import express, { type Express } from "express";
 import type { NextFunction, Request, Response } from "express";
 import { environment } from "./config/env.js";
