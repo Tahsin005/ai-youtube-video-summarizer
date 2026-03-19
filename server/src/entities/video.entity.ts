@@ -1,5 +1,7 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./user.entity.js";
+import { Transcription } from "./transcription.entity.js";
+import { Analysis } from "./analysis.entity.js";
 
 export enum VideoStatus {
     PENDING = "pending",
@@ -43,6 +45,12 @@ export class Video {
         onDelete: "CASCADE"
     })
     user: User;
+
+    @OneToOne(() => Transcription, (transcription) => transcription.video)
+    transcription: Transcription;
+
+    @OneToOne(() => Analysis, (analysis) => analysis.video)
+    analysis: Analysis;
 
     @CreateDateColumn({ type: "timestamp" })
     createdAt: Date;
