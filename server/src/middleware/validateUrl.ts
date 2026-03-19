@@ -4,7 +4,7 @@ import { AppError } from "../utils/errors.js";
 import validator from "validator";
 
 export const validateUrl = (req: Request, res: Response, next: NextFunction) => {
-    const { url } = req.query;
+    const { url } = req.body;
     if (!url || typeof url !== "string") {
         return next(new AppError(StatusCodes.BAD_REQUEST, "URL is required and must be a string"));
     }

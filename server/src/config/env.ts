@@ -16,4 +16,5 @@ export const environment = {
     RESEND_API_KEY: process.env.RESEND_API_KEY || "",
     FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:3000",
     API_URL: process.env.API_URL || "http://localhost:8080/api/v1",
+    YOUTUBE_DL_PATH: process.env.YOUTUBE_DL_PATH || "/usr/bin/yt-dlp",
 };

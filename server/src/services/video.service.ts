@@ -1,8 +1,11 @@
+import { environment } from "../config/env.js";
 import path from "node:path";
 import { AppDataSource } from "../config/database.js";
 import { Video } from "../entities/video.entity.js";
 import { mkdir } from "node:fs/promises";
-import youtubeDl from "youtube-dl-exec";
+import { create } from "youtube-dl-exec";
+
+const youtubeDl = create(environment.YOUTUBE_DL_PATH || "yt-dlp");
 import ytdl from "ytdl-core";
 import ffmpeg from "@ffmpeg-installer/ffmpeg"
 import { AppError } from "../utils/errors.js";
@@ -38,7 +41,7 @@ export class VideoService {
     static async getVideoInfo(url: string): Promise<VideoInfo> {
         try {
             // get video info using youtube-dl
-            const rawInfo = await youtubeDl.default(url, {
+            const rawInfo = await youtubeDl(url, {
                 dumpSingleJson: true,
                 noWarnings: true,
                 preferFreeFormats: true,
@@ -71,7 +74,7 @@ export class VideoService {
                 if (error.message.includes("not unavailable")) {
                     throw new AppError(StatusCodes.NOT_FOUND, "Video not available");
                 }
-                throw new AppError(StatusCodes.INTERNAL_SERVER_ERROR, "Failed to get video info");
+                throw new AppError(StatusCodes.INTERNAL_SERVER_ERROR, "Failed to get video info" + error.message);
             }
             throw new AppError(StatusCodes.INTERNAL_SERVER_ERROR, "Failed to get video info");
         }

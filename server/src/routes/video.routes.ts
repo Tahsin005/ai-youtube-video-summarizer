@@ -4,6 +4,6 @@ import { validateUrl } from "../middleware/validateUrl.js";
 
 const router: Router = Router();
 
-router.get("/info", validateUrl, VideoController.getVideoInfo);
+router.post("/info", validateUrl, VideoController.getVideoInfo);
 
 export default router;
