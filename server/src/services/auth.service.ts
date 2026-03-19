@@ -145,4 +145,13 @@ export class AuthService {
             } as SignOptions
         );
     }
+
+    static verifyToken(token: string) {
+        try {
+            const decoded = jwt.verify(token, this.JWT_SECRET as Secret) as { userId: string; email: string };
+            return decoded;
+        } catch (error) {
+            throw new AppError(StatusCodes.UNAUTHORIZED, "Invalid token");
+        }
+    }
 }
