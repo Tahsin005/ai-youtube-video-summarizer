@@ -26,4 +26,18 @@ export class AuthController {
             next(error);
         }
     }
+
+    static async verifyEmail(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { token } = req.query;
+            if (!token || typeof token !== "string") {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid token" });
+            }
+            const result = await AuthService.verifyEmail(token);
+            res.status(StatusCodes.OK).json(successResponse({ message: result.message }));
+        } catch (error) {
+            logger.error("Error in verifyEmail controller:", error);
+            next(error);
+        }
+    }
 }

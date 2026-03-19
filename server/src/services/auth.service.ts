@@ -8,6 +8,8 @@ import {
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import type { Secret, SignOptions } from "jsonwebtoken";
+import { EmailService } from "./email.service.js";
+import logger from "../utils/logger.js";
 
 export class AuthService {
     private static readonly userRepository = AppDataSource.getTreeRepository(User);
@@ -37,7 +39,7 @@ export class AuthService {
 
         await this.userRepository.save(user);
 
-        // TODO: send verification email
+        await EmailService.sendVerificationEmail(user.email, verificationToken);
         
         const token = this.generateToken(user);
         return {
@@ -60,7 +62,9 @@ export class AuthService {
             throw new AppError(StatusCodes.BAD_REQUEST, "Invalid email or password");
         }
 
-        // TODO: check if email is verified
+        if (!user.isEmailVerified) {
+            throw new AppError(StatusCodes.FORBIDDEN, "Email not verified");
+        }
 
         user.lastLogin = new Date();
         await this.userRepository.save(user);
@@ -69,6 +73,33 @@ export class AuthService {
         return {
             user,
             token
+        }
+    }
+
+    static async verifyEmail(token: string) {
+        logger.info(`Verifying email with token: ${token}`);
+        const user = await this.userRepository.findOne({
+            where: { emailVerificationToken: token }
+        });
+
+        if (!user) {
+            throw new AppError(StatusCodes.BAD_REQUEST, "Invalid verification token");
+        }
+
+        if (!user.emailVerificationTokenExpires || user.emailVerificationTokenExpires < new Date()) {
+            throw new AppError(StatusCodes.BAD_REQUEST, "Verification token has expired");
+        }
+
+        user.isEmailVerified = true;
+        user.emailVerificationToken = null;
+        user.emailVerificationTokenExpires = null;
+
+        await this.userRepository.save(user);
+
+        // TODO: send welcome email
+
+        return {
+            message: "Email verified successfully"
         }
     }
 
