@@ -15,4 +15,15 @@ export class AuthController {
             next(error);
         }
     }
-};
+
+    static async login(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { email, password } = req.body;
+            const result = await AuthService.login(email, password);
+            res.status(StatusCodes.OK).json(successResponse(result));
+        } catch (error) {
+            logger.error("Error in login controller:", error);
+            next(error);
+        }
+    }
+}

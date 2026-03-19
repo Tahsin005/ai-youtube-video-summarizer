@@ -46,6 +46,32 @@ export class AuthService {
         }
     }
 
+    static async login(email: string, password: string) {
+        const user = await this.userRepository.findOne({ 
+            where: { email }
+        });
+
+        if (!user) {
+            throw new AppError(StatusCodes.BAD_REQUEST, "Invalid email or password");
+        }
+
+        const isPasswordValid = await user.comparePassword(password);
+        if (!isPasswordValid) {
+            throw new AppError(StatusCodes.BAD_REQUEST, "Invalid email or password");
+        }
+
+        // TODO: check if email is verified
+
+        user.lastLogin = new Date();
+        await this.userRepository.save(user);
+
+        const token = this.generateToken(user);
+        return {
+            user,
+            token
+        }
+    }
+
     static generateToken(user: User) {
         return jwt.sign(
             {
