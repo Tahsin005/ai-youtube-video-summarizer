@@ -40,4 +40,15 @@ export class AuthController {
             next(error);
         }
     }
+
+    static async resendVerificationEmail(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { email } = req.body;
+            const result = await AuthService.resendVerificationEmail(email);
+            res.status(StatusCodes.OK).json(successResponse({ message: result.message }));
+        } catch (error) {
+            logger.error("Error in resendVerificationEmail controller:", error);
+            next(error);
+        }
+    }
 }

@@ -14,5 +14,6 @@ export const environment = {
     JWT_SECRET: process.env.JWT_SECRET || "9b8092fa-5a33-4c36-b7fb-00fe8b286cc3",
     JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "24h",
     RESEND_API_KEY: process.env.RESEND_API_KEY || "",
-    FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:3000"
+    FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:3000",
+    API_URL: process.env.API_URL || "http://localhost:8080/api/v1",
 };

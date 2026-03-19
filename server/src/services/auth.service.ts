@@ -96,10 +96,40 @@ export class AuthService {
 
         await this.userRepository.save(user);
 
-        // TODO: send welcome email
+        await EmailService.sendWelcomeEmail(user.email, user.name);
 
         return {
             message: "Email verified successfully"
+        }
+    }
+
+    static async resendVerificationEmail(email: string) {
+        const user = await this.userRepository.findOne({
+            where: { email }
+        });
+
+        if (!user) {
+            throw new AppError(StatusCodes.BAD_REQUEST, "Email not found");
+        }
+
+        if (user.isEmailVerified) {
+            throw new AppError(StatusCodes.BAD_REQUEST, "Email already verified");
+        }
+
+        // create new verification token
+        const verificationToken = crypto.randomBytes(32).toString("hex");
+        const tokenExpires = new Date();
+        tokenExpires.setHours(tokenExpires.getHours() + 24); // token valid for 24 hours
+
+        user.emailVerificationToken = verificationToken;
+        user.emailVerificationTokenExpires = tokenExpires;
+
+        await this.userRepository.save(user);
+
+        await EmailService.sendVerificationEmail(user.email, verificationToken);
+
+        return {
+            message: "Verification email resent successfully"
         }
     }
 
