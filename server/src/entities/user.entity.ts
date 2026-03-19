@@ -1,5 +1,6 @@
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
+import { Video } from "./video.entity.js";
 
 @Entity()
 export class User {
@@ -26,6 +27,9 @@ export class User {
 
     @Column({ type: "timestamp", nullable: true })
     lastLogin: Date;
+
+    @OneToMany(() => Video, video => video.user)
+    videos: Video[];
 
     @CreateDateColumn({ type: "timestamp" })
     createdAt: Date;
