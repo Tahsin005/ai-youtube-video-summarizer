@@ -12,7 +12,7 @@ export const AppDataSource = new DataSource({
     username: environment.DB_USERNAME,
     password: environment.DB_PASSWORD,
     database: environment.DB_DATABASE,
-    logging: ["query", "error"],
+    // logging: ["query", "error"],
     entities: [User, Video, Transcription, Analysis],
     migrations: [],
     subscribers: [],

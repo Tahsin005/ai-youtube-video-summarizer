@@ -4,6 +4,7 @@ import { successResponse } from "../utils/response.js";
 import logger from "../utils/logger.js";
 import { VideoService } from "../services/video.service.js";
 import { AuthService } from "../services/auth.service.js";
+import { JobsService } from "../services/jobs.service.js";
 
 export class VideoController {
     static async getVideoInfo(req: Request, res: Response, next: NextFunction) {
@@ -41,8 +42,18 @@ export class VideoController {
             const user = await AuthService.getUserById(userId!);
 
             const videoInfo = await VideoService.getVideoInfo(url as string);
+
+            // creata a background job for transcription
+            const { jobId } = await JobsService.addTranscriptionJob(url, videoInfo, user);
+
+            res.json(successResponse({
+                jobId,
+                videoInfo,
+                message: "Transcription job created successfully"
+            }))
         } catch (error) {
-            
+            logger.error("Error in transcribeVideo controller:", error);
+            next(error);
         }
     }
 };

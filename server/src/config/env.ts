@@ -19,4 +19,6 @@ export const environment = {
     YOUTUBE_DL_PATH: process.env.YOUTUBE_DL_PATH || "/usr/bin/yt-dlp",
     SPEECH_TO_TEXT_LANGUAGE: process.env.SPEECH_TO_TEXT_LANGUAGE || "en-US",
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY || "",
+    REDIS_HOST: process.env.REDIS_HOST || "localhost",
+    REDIS_PORT: process.env.REDIS_PORT || "6379",
 };

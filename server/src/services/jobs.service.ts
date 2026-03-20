@@ -10,6 +10,7 @@ import { unlink } from "fs/promises";
 import { AIService } from "./ai.service.js";
 import logger from "../utils/logger.js";
 import { AppError } from "../utils/errors.js";
+import { environment } from "../config/env.js";
 
 interface TranscriptionJob {
     url: string;
@@ -27,8 +28,8 @@ export class JobsService {
     static async initialize() {
         this.transcriptionQueue = new Queue<TranscriptionJob>("transcription", {
             redis: {
-                host: process.env.REDIS_HOST || "localhost",
-                port: parseInt(process.env.REDIS_PORT || "6379"),
+                host: environment.REDIS_HOST || "localhost",
+                port: parseInt(environment.REDIS_PORT || "6379"),
             },
             defaultJobOptions: {
                 attempts: 3,
@@ -220,5 +221,40 @@ export class JobsService {
         this.transcriptionQueue.clean(24 * 60 * 60 * 1000, "failed");
         this.transcriptionQueue.clean(24 * 60 * 60 * 1000, "active");
         this.transcriptionQueue.clean(24 * 60 * 60 * 1000, "wait");
+    }
+
+    static async addTranscriptionJob(url: string, videoInfo?: any, user?: any) {
+        let video = await this.videoRespository.findOne({
+            where: { url }
+        });
+
+        if (!video) {
+            video = new Video();
+            video.url = url;
+            video.status = VideoStatus.PENDING;
+            video.user = user;
+            
+            if (videoInfo) {
+                Object.assign(video, {
+                    title: videoInfo.title,
+                    description: videoInfo.description,
+                    duration: videoInfo.duration,
+                    author: videoInfo.author,
+                    thumbnail: videoInfo.thumbnailUrl || videoInfo.thumbnail,
+                })
+            }
+
+            await this.videoRespository.save(video);
+        }
+
+        const job = await this.transcriptionQueue.add({
+            url,
+            videoInfo,
+            userId: user?.id,
+        });
+
+        return {
+            jobId: job.id,
+        }
     }
 }
