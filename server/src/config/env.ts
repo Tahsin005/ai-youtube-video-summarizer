@@ -18,4 +18,5 @@ export const environment = {
     API_URL: process.env.API_URL || "http://localhost:8080/api/v1",
     YOUTUBE_DL_PATH: process.env.YOUTUBE_DL_PATH || "/usr/bin/yt-dlp",
     SPEECH_TO_TEXT_LANGUAGE: process.env.SPEECH_TO_TEXT_LANGUAGE || "en-US",
+    GOOGLE_API_KEY: process.env.GOOGLE_API_KEY || "",
 };
