@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes/build/cjs/status-codes.js";
 import { successResponse } from "../utils/response.js";
 import logger from "../utils/logger.js";
 import { VideoService } from "../services/video.service.js";
+import { AuthService } from "../services/auth.service.js";
 
 export class VideoController {
     static async getVideoInfo(req: Request, res: Response, next: NextFunction) {
@@ -29,6 +30,19 @@ export class VideoController {
         } catch (error) {
             logger.error("Error in downloadAudio controller:", error);
             next(error);
+        }
+    }
+
+    static async transcribeVideo(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { url } = req.body;
+            const userId = req.user?.userId;
+
+            const user = await AuthService.getUserById(userId!);
+
+            const videoInfo = await VideoService.getVideoInfo(url as string);
+        } catch (error) {
+            
         }
     }
 };

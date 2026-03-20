@@ -10,6 +10,7 @@ import cors from "cors";
 import morgan from "morgan";
 import { errorResponse } from "./utils/response.js";
 import { handleError } from "./utils/errors.js";
+import { JobsService } from "./services/jobs.service.js";
 
 const app: Express = express();
 const port = environment.PORT || 6000;
@@ -18,6 +19,9 @@ const initialize = async () => {
     try {
         await AppDataSource.initialize();
         logger.info("🗲 [Database]: Database connection established successfully");
+
+        await JobsService.initialize();
+        logger.info("🗲 [JobsService]: Job service initialized successfully");
 
         app.listen(port, () => {
             logger.info(`🗲 [Server]: Server is running on port ${port}`);

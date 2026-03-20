@@ -5,7 +5,7 @@ import { AppError } from "../utils/errors.js";
 import { StatusCodes } from "http-status-codes/build/cjs/status-codes.js";
 import path from "node:path";
 import ffmpeg from "fluent-ffmpeg";
-import { unlink } from "node:fs";
+import { unlink } from "fs/promises";
 import { environment } from "../config/env.js";
 
 export interface TranscriptionResult {
@@ -137,14 +137,14 @@ export class TranscriptionService {
                 totalSamples += 1;
             })
             .on("end", async (error) => {
-                await unlink(analysisPath, (err) => {});
+                await unlink(analysisPath).catch((err) => {});
                 const ratio = totalSamples > 0 ? musicScore / totalSamples : 0;
                 logger.info(`Music detection score: ${ratio.toFixed(2)} (musicScore: ${musicScore}, totalSamples: ${totalSamples})`);
                 resolve(ratio > 0.5 ? "music" : "speech");
             })
             .on("error", async (error) => {
                 logger.error("Error analyzing audio content type:", error);
-                await unlink(analysisPath, (err) => {});
+                await unlink(analysisPath).catch((err) => {});
                 reject(new AppError(StatusCodes.INTERNAL_SERVER_ERROR, "Failed to analyze audio content type")) ;
             });
         });
@@ -170,7 +170,7 @@ export class TranscriptionService {
             logger.info(`Detected content type: ${contentType}`);
 
             if (contentType === "music") {
-                await unlink(wavePath, (err) => {});
+                await unlink(wavePath).catch((error) => {});
                 return {
                     text: "[MUSIC CONTENT DETECTED]",
                     confidence: 1.0,
@@ -225,7 +225,7 @@ export class TranscriptionService {
 
             // clean up files
             await Promise.all([
-                wavePath? unlink(wavePath, (err) => {}) : Promise.resolve(),
+                wavePath? unlink(wavePath).catch((error) => {}) : Promise.resolve(),
                 gcsUrl ? this.deleteFromGCS(gcsUrl) : Promise.resolve(),
             ])
 
