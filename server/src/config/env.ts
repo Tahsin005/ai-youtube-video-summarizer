@@ -4,7 +4,8 @@ dotenv.config();
 
 export const environment = {
     NODE_ENV: process.env.NODE_ENV || "development",
-    PORT: process.env.PORT || 6000,
+    PORT: process.env.PORT || 8080,
+    ADMIN_PORT: process.env.ADMIN_PORT || 8081,
     LOG_LEVEL: process.env.LOG_LEVEL || "info",
     DB_HOST: process.env.DB_HOST || "localhost",
     DB_PORT: process.env.DB_PORT || "5432",
@@ -18,6 +19,7 @@ export const environment = {
     API_URL: process.env.API_URL || "http://localhost:8080/api/v1",
     YOUTUBE_DL_PATH: process.env.YOUTUBE_DL_PATH || "/usr/bin/yt-dlp",
     SPEECH_TO_TEXT_LANGUAGE: process.env.SPEECH_TO_TEXT_LANGUAGE || "en-US",
+    GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS || "",
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY || "",
     REDIS_HOST: process.env.REDIS_HOST || "localhost",
     REDIS_PORT: process.env.REDIS_PORT || "6379",

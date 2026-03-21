@@ -7,6 +7,9 @@ import path from "node:path";
 import ffmpeg from "fluent-ffmpeg";
 import { unlink } from "fs/promises";
 import { environment } from "../config/env.js";
+import ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
+
+ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 export interface TranscriptionResult {
     text: string;
@@ -90,6 +93,11 @@ export class TranscriptionService {
                 "loudnorm=I=-16:LRA=11:TP=-1.5", // normalize audio levels
                 "aformat=channel_layouts=mono", // ensure mono output
             ])
+            .outputOptions("-acodec pcm_s16le", "-ac 1", "-ar 16000") // 16kHz sample rate, mono, PCM encoding
+            .save(outputPath)
+            .on("start", (commandLine) => {
+                logger.info(`FFmpeg process started: ${commandLine}`);
+            })
             .on("end", () => {
                 logger.info(`Audio converted to WAV: ${outputPath}`);
                 resolve(outputPath);

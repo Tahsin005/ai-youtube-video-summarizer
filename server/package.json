@@ -36,12 +36,15 @@
     "typescript-eslint": "^8.57.1"
   },
   "dependencies": {
+    "@bull-board/api": "^6.20.6",
+    "@bull-board/express": "^6.20.6",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@google-cloud/speech": "^7.3.0",
     "@google-cloud/storage": "^7.19.0",
     "@google/generative-ai": "^0.24.1",
     "bcrypt": "^6.0.0",
     "bull": "^4.16.5",
+    "bullAdapter": "link:@bull-board/api/bullAdapter",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",

@@ -10,3 +10,5 @@ logs
 ai-video-summarizer-collection
 
 temp/audio/*
+
+google-credentials.json
